@@ -78,16 +78,22 @@ def get_ip_info(ip):
         print(f"IP Lookup failed: {e}")
     return None
 
+def select_most_complete_data(data_list):
+    def count_non_empty_fields(d):
+        return sum(1 for v in d.values() if v and v != "UNKNOWN")
+    return max(data_list, key=count_non_empty_fields)
 
 @app.get("/check")
 def check_bin(bin: str = Query(...), ip: Optional[str] = None):
 
     
     bin_prefix = bin[:6]
-    data = bin_data.get(bin_prefix)
+    all_matches = [entry for key, entry in bin_data.items() if key == bin_prefix]
 
-    if not data: 
+    if not all_matches:
         return {"success": False, "code": 404, "message": "BIN not found"}
+    
+    data = select_most_complete_data(all_matches)
 
     # Sanitize fields
     brand = data.get("brand", "").upper() or "UNKNOWN"
