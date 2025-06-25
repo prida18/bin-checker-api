@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Request, HTTPException
 from load_data import load_bin_data
 from typing import Optional
 import json
@@ -6,6 +6,7 @@ import requests
 
 app = FastAPI() 
 
+RAPIDAPI_KEY_HEADER = "x-rapidapi-key"
 # Load CSVs into memory on startup
 bin_data = load_bin_data(["bin-list-data.csv","bin-list-data2.csv"])
 with open("countries.json", "r", encoding="utf-8") as f:
@@ -79,7 +80,12 @@ def get_ip_info(ip):
 
 
 @app.get("/check")
-def check_bin(bin: str = Query(...), ip: Optional[str] = None):
+def check_bin(request: Request, bin: str = Query(...), ip: Optional[str] = None):
+    api_key = request.headers.get(RAPIDAPI_KEY_HEADER)
+
+    if not api_key:
+        raise HTTPException(status_code=401, detail="Missing API key")
+    
     bin_prefix = bin[:6]
     data = bin_data.get(bin_prefix)
 
