@@ -6,7 +6,7 @@ import requests
 
 app = FastAPI() 
 
-RAPIDAPI_KEY_HEADER = "x-rapidapi-key"
+RAPIDAPI_KEY_HEADER = "X-Rapidapi-Key"
 # Load CSVs into memory on startup
 bin_data = load_bin_data(["bin-list-data.csv","bin-list-data2.csv"])
 with open("countries.json", "r", encoding="utf-8") as f:
