@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, Request, HTTPException
+from fastapi import FastAPI, Query, Request, HTTPException,Header
 from load_data import load_bin_data
 from typing import Optional
 import json
@@ -80,10 +80,8 @@ def get_ip_info(ip):
 
 
 @app.get("/check")
-def check_bin(request: Request, bin: str = Query(...), ip: Optional[str] = None):
-    api_key = request.headers.get(RAPIDAPI_KEY_HEADER)
-
-    if not api_key:
+def check_bin(request: Request, bin: str = Query(...), ip: Optional[str] = None,x_rapidapi_key: Optional[str] = Header(None)):
+    if not x_rapidapi_key:
         raise HTTPException(status_code=401, detail="Missing API key")
     
     bin_prefix = bin[:6]
